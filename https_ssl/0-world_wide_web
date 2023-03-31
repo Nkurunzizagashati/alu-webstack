@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# this script will display info about a subdomain
+
+if [ $# -eq 2 ]; then
+	domain=$1
+	subdomain=$2
+	subdomains=$subdomain
+else
+	domain=$1
+	subdomains=("www" "lb-01" "web-01" "web-02")
+fi
+
+for subdomain in ${subdomains[@]}; do
+	record_type="$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $4}')"
+	destination=$(dig +short "$subdomain.$domain" | awk '{print $1}')
+	echo "The subdomain $subdomain is a $record_type record and points to $destination"
+done
